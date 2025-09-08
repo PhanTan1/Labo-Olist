@@ -109,11 +109,12 @@ CREATE TABLE products (
         product_height_cm SMALLINT,
         product_width_cm SMALLINT,
 
-        CONSTRAINT PK__products PRIMARY KEY (product_id),
-        CONSTRAINT FK__products FOREIGN KEY (product_category_name) REFERENCES product_category_name_translation(product_category_name)
+        CONSTRAINT PK__products PRIMARY KEY (product_id)
 
 );
     """
+#  CONSTRAINT FK__products FOREIGN KEY (product_category_name) REFERENCES product_category_name_translation(product_category_name)
+
 #Sellers
 sellers_table_sql = """
 DROP TABLE IF EXISTS sellers;
@@ -132,7 +133,7 @@ CREATE TABLE sellers (
 product_category_name_translation_table_sql = """
 DROP TABLE IF EXISTS product_category_name_translation;
 CREATE TABLE product_category_name_translation (
-    product_category_name VARCHAR (60) NOT NULL,
+    product_category_name VARCHAR (60),
     product_category_name_english VARCHAR (60) NOT NULL,
     
     CONSTRAINT PK__product_category_name_translation PRIMARY KEY(product_category_name)

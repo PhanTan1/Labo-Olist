@@ -1,0 +1,20 @@
+❌ Error at row 0:
+{'product_id': '1e9e8ef04dbcff4541ed26657ea517e5', 'product_category_name': 'perfumaria', 'product_name_length': 40.0, 'product_description_length': 287.0, 'product_photos_qty': 1.0, 'product_weight_g': 225.0, 'product_length_cm': 16.0, 'product_height_cm': 10.0, 'product_width_cm': 14.0}
+Exception: insert or update on table "products" violates foreign key constraint "fk__products"
+DETAIL:  Key (product_category_name)=(perfumaria) is not present in table "product_category_name_translation".
+
+Impossible to set CONSTRAINT FK__products FOREIGN KEY (product_category_name) REFERENCES product_category_name_translation(product_category_name)
+
+❌ Error at row 3317:
+{'review_id': '3242cc306a9218d0377831e175d62fbf', 'order_id': '9c5bfba7de6a4abbb6ba0baab78d1622', 'review_score': 5, 'review_comment_title': None, 'review_comment_message': 'Ótimo ', 'review_creation_date': '2017-07-21 00:00:00', 'review_answer_timestamp': '2017-07-22 01:06:37'}
+Exception: duplicate key value violates unique constraint "pk__order_reviews"
+DETAIL:  Key (review_id)=(3242cc30-6a92-18d0-3778-31e175d62fbf) already exists.
+
+"3242cc306a9218d0377831e175d62fbf","711246846695fa895c1776f0ddc30b20",5,,Ótimo ,2017-07-21 00:00:00,2017-07-22 01:06:37 Line 1081
+"3242cc306a9218d0377831e175d62fbf","9c5bfba7de6a4abbb6ba0baab78d1622",5,,Ótimo ,2017-07-21 00:00:00,2017-07-22 01:06:37 Line 3508
+
+SELECT * FROM public.orders
+where order_id = '9c5bfba7-de6a-4abb-b6ba-0baab78d1622'
+
+SELECT * FROM public.orders
+where order_id = '71124684-6695-fa89-5c17-76f0ddc30b20'
