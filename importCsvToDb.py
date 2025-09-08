@@ -1,3 +1,4 @@
+from db_config import get_engine
 from sqlalchemy import create_engine, text
 from sqlalchemy.exc import IntegrityError, DataError
 import pandas as pd
@@ -10,7 +11,7 @@ port = '5432'
 database = 'olist'
 
 # Create SQLAlchemy engine
-engine = create_engine(f'postgresql://{username}:{password}@{host}:{port}/{database}', echo=True)
+engine = get_engine()
 
 # Step 1: Create the table
 with engine.begin() as conn:
