@@ -142,13 +142,13 @@ CREATE TABLE product_category_name_translation (
 
 
 TABLES = {
+    'product_category_name_translation': product_category_name_translation_table_sql,
     'customers': customers_table_sql,
-    'geolocation': geolocation_table_sql,
-    'order_items': orderItems_table_sql,
-    'order_payments': orderPayments_table_sql,
-    'order_reviews': orderReviews_table_sql,
     'orders': orders_table_sql,
     'products': products_table_sql,
     'sellers': sellers_table_sql,
-    'product_category_name_translation': product_category_name_translation_table_sql
+    'order_items': orderItems_table_sql,
+    'order_payments': orderPayments_table_sql,
+    'order_reviews': orderReviews_table_sql,
+    'geolocation': geolocation_table_sql
 }
