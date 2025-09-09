@@ -36,6 +36,15 @@ def load_csv_to_table(csv_path, table_name, engine):
         if col in df.columns:
             df[col] = df[col].apply(format_guid)
 
+    # Fast-load tables that don't need duplicate handling
+    fast_load_tables = ['geolocation', 'product_category_name_translation']
+
+    if table_name in fast_load_tables:
+        df.to_sql(table_name, engine, if_exists='append', index=False)
+        print(f"🚀 Fast-loaded {table_name} with {len(df)} rows.")
+        return
+
+    # Row-by-row insert with duplicate key handling
     with engine.connect() as conn:
         for i, row in df.iterrows():
             try:
