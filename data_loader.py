@@ -66,12 +66,19 @@ def load_csv_to_table(csv_path, table_name, engine):
     pk = PK_COLUMNS.get(table_name)
     if pk:
         before = len(df)
-        df = df.drop_duplicates(subset=pk, keep='first')
-        dropped = before - len(df)
-        if dropped:
-            logging.info(
-                f"Dropped {dropped} duplicate rows from '{table_name}' on keys {pk}"
+        dupes = df[df.duplicated(subset=pk, keep='first')]
+
+        if not dupes.empty:
+            for _, row in dupes.iterrows():
+                logging.info(
+                    f"Dropped duplicate from '{table_name}': {row.to_dict()}\n"
+                    f"Exception: duplicate key value violates unique constraint \"pk__{table_name}\"\n"
+                    f"DETAIL: Key ({pk[0]})=({row[pk[0]]}) already exists.\n"
             )
+
+    df = df.drop_duplicates(subset=pk, keep='first')
+
+    
 
     # Bulk insert the cleaned DataFrame in chunks
     try:
