@@ -16,7 +16,6 @@ CREATE TABLE customers (
 #Geolocation
 geolocation_table_sql = """
 DROP TABLE IF EXISTS geolocation;
-
 CREATE TABLE geolocation (
     geolocation_zip_code_prefix VARCHAR(5),
     geolocation_lat NUMERIC(15,10),
