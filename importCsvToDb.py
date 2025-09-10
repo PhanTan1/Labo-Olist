@@ -11,48 +11,46 @@ logging.basicConfig(filename='duplicate_review_errors.log', level=logging.INFO, 
 engine = get_engine()
 
 # Load CSV
-df = pd.read_csv('data/olist_order_reviews_dataset.csv')
+df = pd.read_csv('data/olist_products_dataset.csv')
 df = df.where(pd.notnull(df), None)
 
-# Format UUIDs
-def format_guid(value):
-    try:
-        return str(uuid.UUID(value))
-    except (ValueError, TypeError):
-        return None
+# Create SQLAlchemy engine
+engine = get_engine()
 
-df['review_id'] = df['review_id'].apply(format_guid)
-df['order_id'] = df['order_id'].apply(format_guid)
+# Step 1: Create the table
+with engine.begin() as conn:
+    create_table_sql = """
 
-# Insert row-by-row with isolated transactions
-with engine.connect() as conn:
+DROP TABLE IF EXISTS products;
+CREATE TABLE products (
+        product_id UUID,
+        product_category_name VARCHAR (60),
+        product_name_length VARCHAR (11),
+        product_description_length SMALLINT,
+        product_photos_qty SMALLINT,
+        product_weight_g INT,
+        product_length_cm SMALLINT,
+        product_height_cm SMALLINT,
+        product_width_cm SMALLINT,
+
+        CONSTRAINT PK__products PRIMARY KEY (product_id),
+        CONSTRAINT FK__products FOREIGN KEY (product_category_name) REFERENCES product_category_name_translation(product_category_name)
+
+);
+"""
+    
+    conn.execute(text(create_table_sql))
+
+# Step 2: Load CSV data
+df = pd.read_csv('data/olist_products_dataset.csv')
+df = df.where(pd.notnull(df), None)
+
+# Step 3: Insert row-by-row to catch errors
+with engine.begin() as conn:
     for i, row in df.iterrows():
         try:
-            with conn.begin_nested():  # Isolated savepoint
-                pd.DataFrame([row]).to_sql(
-                    'order_reviews',
-                    conn,
-                    if_exists='append',
-                    index=False,
-                    method='multi'
-                )
-        except IntegrityError as e:
-            if 'duplicate key value violates unique constraint' in str(e.orig):
-                logging.info(f"❌ Duplicate at row {i}: {row.to_dict()}")
-                try:
-                    with conn.begin_nested():
-                        update_sql = text("""
-                            UPDATE order_reviews
-                            SET order_id = :order_id,
-                                review_score = :review_score,
-                                review_comment_title = :review_comment_title,
-                                review_comment_message = :review_comment_message,
-                                review_creation_date = :review_creation_date,
-                                review_answer_timestamp = :review_answer_timestamp
-                            WHERE review_id = :review_id
-                        """)
-                        conn.execute(update_sql, row.to_dict())
-                except Exception as update_error:
-                    logging.info(f"⚠️ Update failed at row {i}: {update_error}")
-            else:
-                logging.info(f"❌ Other error at row {i}: {e.orig}")
+            pd.DataFrame([row]).to_sql('products', conn, if_exists='append', index=False, method='multi')
+        except (IntegrityError, DataError) as e:
+            print(f"❌ Error at row {i}:")
+            print(row.to_dict())
+            print(f"Exception: {e.orig}")

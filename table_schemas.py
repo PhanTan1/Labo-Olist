@@ -109,11 +109,11 @@ CREATE TABLE products (
         product_height_cm SMALLINT,
         product_width_cm SMALLINT,
 
-        CONSTRAINT PK__products PRIMARY KEY (product_id)
+        CONSTRAINT PK__products PRIMARY KEY (product_id),
+        CONSTRAINT FK__products FOREIGN KEY (product_category_name) REFERENCES product_category_name_translation(product_category_name)
 
 );
     """
-#  CONSTRAINT FK__products FOREIGN KEY (product_category_name) REFERENCES product_category_name_translation(product_category_name)
 
 #Sellers
 sellers_table_sql = """
