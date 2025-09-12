@@ -1,0 +1,4 @@
+add to file pg_hba.conf
+host    all             all             0.0.0.0/0               md5
+
+add file etl_postgres.py in dag folder Airflow
